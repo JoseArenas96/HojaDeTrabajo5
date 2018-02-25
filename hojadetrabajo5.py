@@ -14,7 +14,7 @@ def proceso_cpu(env, cpu, io, mem, pid):
     instrucciones = randint(1, 10)
     print('PID %d: creado con %d memoria y %d instrucciones. Tiempo: %d ' %(pid, memoria, instrucciones, env.now))
     yield mem.get(memoria)
-    print('PID %d: se asignaron %d unidades de memoria, quedan %d.' %(pid, memoria, mem.level))
+    print('PID %d: se asignaron %d unidades de memoria, quedan %d. Tiempo %d' %(pid, memoria, mem.level, env.now))
     while instrucciones > 0:
     	request = cpu.request()
     	print('PID %d: solicitando uso de CPU en tiempo: %d' %(pid, env.now))
