@@ -1,7 +1,6 @@
 import simpy
 import csv
 from random import seed, randint, expovariate
-import tkinter as tk
 
 # parametros de simulacion
 random_seed = 12345
