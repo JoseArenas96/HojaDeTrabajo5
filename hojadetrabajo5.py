@@ -1,6 +1,7 @@
 import simpy
 import csv
 from random import seed, randint, expovariate
+import numpy
 
 # parametros de simulacion
 random_seed = 12345
@@ -11,7 +12,7 @@ cantidad_memoria = 100
 intervalo_llegada_procesos = 10
 
 # estadisticas
-promedio = 0
+lista_Tiempos = []
 
 def proceso_cpu(env, cpu, io, mem, pid):
     memoria = randint(1, 10)
@@ -37,8 +38,7 @@ def proceso_cpu(env, cpu, io, mem, pid):
     		print('PID %d: saliendo de cola I/O en tiempo %d.' %(pid, env.now))
     mem.put(memoria)
     print('PID %d: termino ejecucion en tiempo %d, devolviendo %d unidades de memoria, quedan %d.' %(pid, env.now, memoria, mem.level))
-    global promedio
-    promedio = promedio + (env.now - init_time)
+    lista_Tiempos.append(env.now - init_time)
 
 
 def creador_procesos(env):
@@ -47,7 +47,12 @@ def creador_procesos(env):
         yield env.timeout(expovariate(1.0/intervalo_llegada_procesos))
     
     
-
+def estadisticas ():
+    estadistica = numpy.array( lista_Tiempos)
+    promedio = estadistica.mean()
+    desviacion_estandar = estadistica.std()
+    print('Promedio de tiempo por proceso %.3f' %promedio)
+    print('Desviacion estandar %.3f' %desviacion_estandar)
 
 # crear Environment de simpy y Resources
 seed(random_seed)
@@ -58,10 +63,5 @@ mem = simpy.Container(env, cantidad_memoria, cantidad_memoria)
 env.process(creador_procesos(env))
 env.run()
 
-with open('test.csv', 'w') as csvfile:
-	cwriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-	# write row
-
 print('----- ESTADISTICAS ----------')
-print('Tiempo total de simulacion: %d' %env.now)
-print('El promedio de tiempo de un proceso en la computadora fue: %d' %(promedio/numero_procesos))
+estadisticas()
